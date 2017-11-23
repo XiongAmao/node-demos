@@ -7,42 +7,47 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>JSONP</title>
     <style>
-        .content{
+        .content {
             min-height: 100px;
-            border:1px solid #aaa;
+            border: 1px solid #aaa;
+            margin: 10px;
+        }
+
+        .content div {
+            margin: 4px;
         }
     </style>
 </head>
+
 <body>
     <button>get data</button>
     <div class="content"></div>
     <script>
         var button = document.querySelector('button')
-        button.addEventListener('click', ()=>{
+        button.addEventListener('click', () => {
             jsonp({
-                url:'http://localhost:8888',
+                url: 'http://localhost:8888',
                 // 需要注意协议
                 callback: 'getName'
             })
         })
+
         function jsonp(params) {
             var url = params.url,
                 callback = params.callback,
                 jsonpScript = document.createElement('script'),
                 head = document.getElementsByTagName('head')[0]
             head.appendChild(jsonpScript)
-            
+
             jsonpScript.src = url + '/?callback=' + callback
         }
-        function getName(data){
+
+        function getName(data) {
             var contentBox = document.querySelector('.content')
-            var name = data.name,
-                age = data.age,
-                job = data.job
-            for(i in data){
+            for (var i in data) {
                 let div = document.createElement('div')
                 div.innerText = data[i]
-                contentBox.appendChild(div) 
+                contentBox.appendChild(div)
             }
         }
     </script>

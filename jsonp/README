@@ -1,0 +1,8 @@
+# start
+
+```
+npm run start # start server
+
+open http://localhost:8888/ 
+
+```
