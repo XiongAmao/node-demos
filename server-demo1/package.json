@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "testcookie": "curl -v -H \"Cookie: foo=bar; baz=val; isVisit=true\" \"http://127.0.0.1:8889/path?foo=bar&foo=baz\"",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC"
