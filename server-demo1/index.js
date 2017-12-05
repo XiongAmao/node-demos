@@ -1,3 +1,7 @@
+import {
+  EXDEV
+} from 'constants';
+
 var http = require('http')
 var url = require('url')
 var fs = require('fs')
@@ -44,7 +48,7 @@ http.createServer(function (req, res) {
   // 查询字符串
   var query = reqPath.query
   console.log('do something with query string')
-  if(Object.keys(query).length) console.log(query)
+  if (Object.keys(query).length) console.log(query)
 
 
   // Cookie
@@ -104,4 +108,42 @@ function cookiesSerializer(name, val, option) {
   option.secure && pairs.push(`Secure`)
 
   return pairs.join(';')
+}
+
+function sessionHandle(req, res) {
+
+  var sessions = {}
+  var key = 'session_id'
+  var EXPIRES = 30 * 1000 // 30s
+  // session生成器
+  var generate = function () {
+    var session = {}
+    session.id = (new Date()).getTime() + Math.random()
+    session.cookie = {
+      // 设置cookie 过期时间
+      expire: (new Date()).getTime() + EXPIRES
+    }
+    sessions[session.id] = session
+    return session
+  }
+  req.cookies = parseCookie(req.headers.cookie)
+  var id = req.cookies[key]
+  if (!id) {
+    req.session = generate()
+  }else{
+    var session = sessions[id]
+    if(session){
+      if(session.cookie.expire > (new Date()).getTime()){
+        session.cookie.expire = (new Date()).getTime() + EXPIRES
+        req.session = session
+      } else {
+        delete sessions[id]
+        req.session = generate()
+      }
+    }
+  }
+}
+
+function sessionCheck(req, res) {
+
 }
