@@ -111,6 +111,7 @@ function cookiesSerializer(name, val, option) {
 }
 
 function session(req, res) {
+  // FIXME: 这里缓存的字段应该有问题，每次都会重新声明一个新的sessions对象，需要另外的地方报错
   const sessions = {}
   var key = 'Session_id'
   var EXPIRES = 60 * 1000 // 6000ms 
@@ -155,6 +156,7 @@ function session(req, res) {
   var writeHead = res.writeHead;
   // 缓存原方法
   res.writeHead = function () {
+    // FIXME: 貌似拿不到 Set-Cookie 字段，因为前面就没有设置
     var cookies = res.getHeader('Set-Cookie')
     // 获取已经设置过的响应的 cookie字段
     console.log('cookies1:', cookies)
@@ -170,6 +172,7 @@ function session(req, res) {
   // 业务逻辑
   
   if (!req.cookies.isVisit) {
+    // FIXME: 有bug 判断的不对，需要重新写cookie关于isVisit字段的逻辑
     res.setHeader('Set-Cookie', cookiesSerializer('isVisit', '1'))
     console.log('sessions', sessions)
     res.writeHead(200, {
