@@ -114,7 +114,7 @@ function session(req, res) {
   const sessions = {}
   var key = 'Session_id'
   var EXPIRES = 60 * 1000 // 6000ms 
-
+  
   req.cookies = parseCookie(req.headers.cookie)
   // 取cookie
   var id = req.cookies[key];
@@ -157,25 +157,32 @@ function session(req, res) {
   res.writeHead = function () {
     var cookies = res.getHeader('Set-Cookie')
     // 获取已经设置过的响应的 cookie字段
+    console.log('cookies1:', cookies)
     var session = cookiesSerializer(key, req.session.id) // 构造一个session_id 字段的cookie
     // 这里返回的session cookie为 Session_id=id 因此并不反回expire，expire只在服务器通过id进行比对，
     cookies = Array.isArray(cookies) ? cookies.concat(session) : [cookies, session] // 拼接成一个cookies
     res.setHeader('Set-Cookies', cookies)
+    console.log('cookies2:', cookies)
     return writeHead.apply(this, arguments)
     // 通过闭包返回原writeHead函数执行
   }
 
   // 业务逻辑
-  if (!req.session.isVisit) {
-    req.session.isVisit = true
+  
+  if (!req.cookies.isVisit) {
+    res.setHeader('Set-Cookie', cookiesSerializer('isVisit', '1'))
+    console.log('sessions', sessions)
     res.writeHead(200, {
       'Content-type': 'text/plain; charset=UTF-8'
     })
+    console.log(res.getHeader('Set-Cookie'))
     res.end('欢迎第一次来到本店')
   } else {
+    console.log('sessions', sessions)
     res.writeHead(200, {
       'Content-type': 'text/plain; charset=UTF-8'
     })
+    console.log(res.getHeader('Set-Cookie'))
     res.end('欢迎再来')
   }
 }
